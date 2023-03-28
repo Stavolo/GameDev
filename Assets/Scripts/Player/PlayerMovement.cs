@@ -1,5 +1,8 @@
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using Core.Tools;
+using Core.Enums;
+using System;
 
 namespace Player
 {
@@ -9,10 +12,12 @@ namespace Player
     {
         [Header("Movement")]
         [SerializeField] private float _horizontalSpeed;
-        [SerializeField] private bool _faceRight;
+        [SerializeField] private Direction _direction;
 
         [Header("Jump")]
         [SerializeField] private float _jumpForce;
+
+        [SerializeField] private DirectionalCameraPair _cameras;
 
         private Rigidbody2D _rigidbody;
         private Collider2D _collider;
@@ -56,7 +61,7 @@ namespace Player
 
         private void SetDirection(float direction)
         {
-            if (_faceRight && direction < 0 || !_faceRight && direction > 0)
+            if (_direction == Direction.Right && direction < 0 || _direction == Direction.Left && direction > 0)
             {
                 Flip();
             }
@@ -64,7 +69,9 @@ namespace Player
         private void Flip()
         {
             transform.Rotate(0, 180, 0);
-            _faceRight = !_faceRight;
+            _direction = _direction == Direction.Right ? Direction.Left : Direction.Right;
+            foreach (var cameraPair in _cameras.DirectionalCameras)
+                cameraPair.Value.enabled = cameraPair.Key == _direction;
         }
         private void UpdateJump()
         {
