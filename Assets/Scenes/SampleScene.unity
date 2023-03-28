@@ -343,17 +343,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _layers:
   - <Transform>k__BackingField: {fileID: 308188693}
-    <Speed>k__BackingField: 0.2
+    <Speed>k__BackingField: 0.01
   - <Transform>k__BackingField: {fileID: 1761275606}
-    <Speed>k__BackingField: 0.3
+    <Speed>k__BackingField: 0.2
   - <Transform>k__BackingField: {fileID: 410208635}
-    <Speed>k__BackingField: 0.4
-  - <Transform>k__BackingField: {fileID: 1877547368}
     <Speed>k__BackingField: 0.5
+  - <Transform>k__BackingField: {fileID: 1877547368}
+    <Speed>k__BackingField: 0.8
   - <Transform>k__BackingField: {fileID: 1933648870}
     <Speed>k__BackingField: 1
   - <Transform>k__BackingField: {fileID: 1091976688}
-    <Speed>k__BackingField: 1.5
+    <Speed>k__BackingField: 2
+  _target: {fileID: 631123609}
 --- !u!1 &464906378
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,7 +418,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 464906378}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.8490391, y: 0.94092155, z: 0.073265076}
+  m_LocalPosition: {x: 0.8490391, y: 1.7, z: 0.073265076}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -503,7 +504,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.061741, y: -0.74, z: -10}
+  m_LocalPosition: {x: 11.061741, y: 0.019078493, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -560,6 +561,7 @@ GameObject:
   - component: {fileID: 631123614}
   - component: {fileID: 631123615}
   - component: {fileID: 631123616}
+  - component: {fileID: 631123617}
   m_Layer: 0
   m_Name: Warrior_Sheet-Effect_0
   m_TagString: Player
@@ -714,6 +716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8358521905e96b44be8083460e3f2cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 631123610}
   _horizontalSpeed: 8
   _direction: 0
   _jumpForce: 800
@@ -757,6 +760,20 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!114 &631123617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 631123607}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b52e42a4bbb26e458b259a6c6295685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 631123610}
+  _runAnimationKey: Run
 --- !u!1 &658045700
 GameObject:
   m_ObjectHideFlags: 3
@@ -809,7 +826,7 @@ MonoBehaviour:
   m_XDamping: 3
   m_YDamping: 1
   m_ZDamping: 1
-  m_TargetMovementOnly: 1
+  m_TargetMovementOnly: 0
   m_ScreenX: 0.7
   m_ScreenY: 0.78
   m_CameraDistance: 10
@@ -908,7 +925,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 691081296}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 82.0873, y: 0.94092155, z: 0.073265076}
+  m_LocalPosition: {x: 82.0873, y: 1.7, z: 0.073265076}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -979,7 +996,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 873043493}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -17.762842, y: 0.94092155, z: 0.073265076}
+  m_LocalPosition: {x: -5.509227, y: 1.7, z: 0.073265076}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1295,7 +1312,7 @@ MonoBehaviour:
   m_XDamping: 3
   m_YDamping: 1
   m_ZDamping: 1
-  m_TargetMovementOnly: 1
+  m_TargetMovementOnly: 0
   m_ScreenX: 0.3
   m_ScreenY: 0.78
   m_CameraDistance: 10
