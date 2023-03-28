@@ -10,6 +10,8 @@ namespace Player
 
     public class PlayerMovement : MonoBehaviour
     {
+        [SerializeField] private Animator _animator;
+
         [Header("Movement")]
         [SerializeField] private float _horizontalSpeed;
         [SerializeField] private Direction _direction;
@@ -22,9 +24,12 @@ namespace Player
         private Rigidbody2D _rigidbody;
         private Collider2D _collider;
 
-        //private bool _isGrounded;
+        private bool _isGrounded;
         private bool _isJumping = false;
         private float _startJumpVerticalPosition;
+
+        private Vector2 _movement;
+        private AnimationType _currentAnimationType;
 
         private void Start()
         {
@@ -33,14 +38,25 @@ namespace Player
         }
         private void Update()
         {
+            UpdateAnimations();
+            if (_isGrounded) _isJumping = false;
             if (_isJumping)
             {
                 UpdateJump();
             }
 
         }
+        private void UpdateAnimations()
+        {
+            PlayAnimation(AnimationType.Idle, true);
+            PlayAnimation(AnimationType.Run, _movement.magnitude > 0);
+            PlayAnimation(AnimationType.Jump, _isJumping);
+
+        }
+
         public void MoveHorizontally(float direction)
         {
+            _movement.x = direction;
             SetDirection(direction);
             Vector2 velocity = _rigidbody.velocity;
             velocity.x = direction * _horizontalSpeed;
@@ -49,10 +65,8 @@ namespace Player
 
         public void Jump()
         {
-            //if(_isJumping && !_isGrounded) return;
-            //_isGrounded = false;
-            if (_isJumping)
-                return;
+            if(_isJumping && !_isGrounded) return;
+            _isGrounded = false;
 
             _isJumping = true;
             _rigidbody.AddForce(Vector2.up * _jumpForce);
@@ -87,7 +101,7 @@ namespace Player
             _isJumping = false;
             _rigidbody.position = new Vector2(_rigidbody.position.x, _startJumpVerticalPosition);
         }
-        /*private void OnCollisionEnter2D(Collision2D collision)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
             if (collision.collider.CompareTag("Ground"))
             {
@@ -102,6 +116,29 @@ namespace Player
             {
                 _isGrounded = false;
             }
-        }*/
+        }
+
+        private void PlayAnimation(AnimationType animationType, bool active)
+        {
+            if (!active)
+            {
+                if (_currentAnimationType == AnimationType.Idle || _currentAnimationType != animationType)
+                    return;
+
+                _currentAnimationType = AnimationType.Idle;
+                PlayAnimation(_currentAnimationType);
+                return;
+            }
+            if (_currentAnimationType >= animationType)
+                return;
+
+            _currentAnimationType = animationType;
+            PlayAnimation(_currentAnimationType);
+        }
+
+        private void PlayAnimation(AnimationType animationType)
+        {
+            _animator.SetInteger(nameof(AnimationType), (int)animationType);
+        }
     }
 }
