@@ -1,10 +1,11 @@
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using Core.Tools;
-using Core.Enums;
 using Player.PlayerAnimation;
 using System;
 using System.Diagnostics;
+using Core.Movement.Controller;
+using Core.Movement.Data;
 
 namespace Player
 {
@@ -14,65 +15,49 @@ namespace Player
     {
         [SerializeField] private AnimatorController _animator;
 
-        [Header("Movement")]
-        [SerializeField] private float _horizontalSpeed;
-        [SerializeField] private Direction _direction;
-
-        [Header("Jump")]
-        [SerializeField] private float _jumpForce;
-
+        [SerializeField] private HorizontalMovementData _horizontalMovementData;
+        [SerializeField] private JumpData _jumpData;
         [SerializeField] private DirectionalCameraPair _cameras;
 
         private Rigidbody2D _rigidbody;
-        private Collider2D _collider;
-
-        private bool _isGrounded;
-        private bool _isJumping = false;
-        private float _startJumpVerticalPosition;
-
-        private Vector2 _movement;
+        private  Collider2D _collider;
+        private HorizontalMover _horizontalMover;
+        private Jumper _jumper;
 
         private void Start()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
             _collider = GetComponent<Collider2D>();
+            _horizontalMover = new HorizontalMover(_rigidbody, _horizontalMovementData);
+            _jumper = new Jumper(_rigidbody, _collider, _jumpData);
         }
         private void Update()
         {
             UpdateAnimations();
-            if (_isGrounded) _isJumping = false;
-            if (_isJumping)
-            {
-                UpdateJump();
-            }
+            UpdateCameras();
 
+            if (_jumper.IsGrounded) _jumper.IsJumping = false;
+            if (_jumper.IsJumping)
+                _jumper.UpdateJump();
+
+        }
+        private void UpdateCameras()
+        {
+            foreach (var cameraPair in _cameras.DirectionalCameras)
+                cameraPair.Value.enabled = cameraPair.Key == _horizontalMovementData.Direction;
         }
         private void UpdateAnimations()
         {
             _animator.PlayAnimation(AnimationType.Idle, true);
-            _animator.PlayAnimation(AnimationType.Run, _movement.magnitude > 0);
-            _animator.PlayAnimation(AnimationType.Jump, _isJumping);
+            _animator.PlayAnimation(AnimationType.Run, _horizontalMover.IsMoving);
+            _animator.PlayAnimation(AnimationType.Jump, _jumper.IsJumping);
 
         }
 
-        public void MoveHorizontally(float direction)
-        {
-            _movement.x = direction;
-            SetDirection(direction);
-            Vector2 velocity = _rigidbody.velocity;
-            velocity.x = direction * _horizontalSpeed;
-            _rigidbody.velocity = velocity;
-        }
 
-        public void Jump()
-        {
-            if (_isJumping && !_isGrounded) return;
-            _isGrounded = false;
+        public void MoveHorizontally(float direction) => _horizontalMover.MoveHorizontally(direction);
 
-            _isJumping = true;
-            _rigidbody.AddForce(Vector2.up * _jumpForce);
-            _startJumpVerticalPosition = transform.position.y;
-        }
+        public void Jump() => _jumper.Jump();
 
         public void StartAttack()
         {
@@ -82,50 +67,6 @@ namespace Player
             _animator.AnimationEnded += EndAttack;
         }
 
-        private void SetDirection(float direction)
-        {
-            if (_direction == Direction.Right && direction < 0 || _direction == Direction.Left && direction > 0)
-            {
-                Flip();
-            }
-        }
-        private void Flip()
-        {
-            transform.Rotate(0, 180, 0);
-            _direction = _direction == Direction.Right ? Direction.Left : Direction.Right;
-            foreach (var cameraPair in _cameras.DirectionalCameras)
-                cameraPair.Value.enabled = cameraPair.Key == _direction;
-        }
-        private void UpdateJump()
-        {
-            if (_rigidbody.velocity.y < 0 && _rigidbody.position.y <= _startJumpVerticalPosition)
-            {
-                ResetJump();
-                return;
-            }
-        }
-
-        private void ResetJump()
-        {
-            _isJumping = false;
-            _rigidbody.position = new Vector2(_rigidbody.position.x, _startJumpVerticalPosition);
-        }
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            if (collision.collider.CompareTag("Ground"))
-            {
-                _isGrounded = true;
-                _isJumping = false;
-            }
-        }
-
-        private void OnCollisionExit2D(Collision2D collision)
-        {
-            if (collision.collider.CompareTag("Ground"))
-            {
-                _isGrounded = false;
-            }
-        }
 
         private void Attack()
         {

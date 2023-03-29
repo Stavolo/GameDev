@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using InputReader;
+using Core.Services.Updater;
+using System;
+
 namespace Player
 {
-    public class PlayerBrain
+    public class PlayerBrain : IDisposable
     {
         private readonly PlayerEntity _playerEntity;
         private readonly List<IEntityInputSource> _inputSources;
@@ -13,9 +17,12 @@ namespace Player
         {
             _playerEntity = playerEntity;
             _inputSources = inputSources;
+            ProjectUpdater.Instance.FixedUpdateCalled += OnFixedUpdate;
         }
 
-        public void OnFixedUpdate()
+        public void Dispose() => ProjectUpdater.Instance.FixedUpdateCalled -= OnFixedUpdate;
+
+        private void OnFixedUpdate()
         {
             _playerEntity.MoveHorizontally(GetHorizontalDirection());
             if (IsJump)
