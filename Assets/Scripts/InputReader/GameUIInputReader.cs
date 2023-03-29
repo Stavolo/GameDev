@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-namespace Player
+using Player;
+namespace InputReader
 {
     public class GameUIInputReader : MonoBehaviour, IEntityInputSource
     {

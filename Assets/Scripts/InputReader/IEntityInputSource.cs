@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace Player
+using Player;
+namespace InputReader
 {
     public interface IEntityInputSource
     {
