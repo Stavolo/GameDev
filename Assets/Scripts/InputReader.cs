@@ -1,25 +1,30 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Player;
-using System.Runtime.CompilerServices;
-
-public class InputReader : MonoBehaviour
+public class ExternalDevicesInputReader : IEntityInputSource
 {
-    [SerializeField] private PlayerMovement _playerMovement;
 
-    private float _direction;
+    public float Direction => Input.GetAxisRaw("Horizontal");
 
-    private void Update()
+    public bool Jump { get; private set; }
+    public bool Attack { get; private set; }
+
+    public void OnUpdate()
     {
-        _direction = Input.GetAxisRaw("Horizontal");
+
         if (Input.GetKeyDown(KeyCode.C))
-        {
-            _playerMovement.Jump();
-        }
+            Jump = true;
+
+        if (!IsPointerOverUi() && Input.GetButtonDown("Fire1"))
+            Attack = true;
     }
 
-    private void FixedUpdate()
+    private bool IsPointerOverUi() => EventSystem.current.IsPointerOverGameObject();
+
+    public void ResetOneTimeActions()
     {
-        _playerMovement.MoveHorizontally(_direction);
+        Jump = false;
+        Attack = false;
     }
 
 }

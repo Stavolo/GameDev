@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Player
 {
-
-
     public enum AnimationType
     {
         Idle = 0,
