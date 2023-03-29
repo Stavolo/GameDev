@@ -2,15 +2,17 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using Core.Tools;
 using Core.Enums;
+using Player.PlayerAnimation;
 using System;
+using System.Diagnostics;
 
 namespace Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
 
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerEntity : MonoBehaviour
     {
-        [SerializeField] private Animator _animator;
+        [SerializeField] private AnimatorController _animator;
 
         [Header("Movement")]
         [SerializeField] private float _horizontalSpeed;
@@ -29,7 +31,6 @@ namespace Player
         private float _startJumpVerticalPosition;
 
         private Vector2 _movement;
-        private AnimationType _currentAnimationType;
 
         private void Start()
         {
@@ -48,9 +49,9 @@ namespace Player
         }
         private void UpdateAnimations()
         {
-            PlayAnimation(AnimationType.Idle, true);
-            PlayAnimation(AnimationType.Run, _movement.magnitude > 0);
-            PlayAnimation(AnimationType.Jump, _isJumping);
+            _animator.PlayAnimation(AnimationType.Idle, true);
+            _animator.PlayAnimation(AnimationType.Run, _movement.magnitude > 0);
+            _animator.PlayAnimation(AnimationType.Jump, _isJumping);
 
         }
 
@@ -65,12 +66,20 @@ namespace Player
 
         public void Jump()
         {
-            if(_isJumping && !_isGrounded) return;
+            if (_isJumping && !_isGrounded) return;
             _isGrounded = false;
 
             _isJumping = true;
             _rigidbody.AddForce(Vector2.up * _jumpForce);
             _startJumpVerticalPosition = transform.position.y;
+        }
+
+        public void StartAttack()
+        {
+            if (_animator.PlayAnimation(AnimationType.Attack, true))
+                return;
+            _animator.ActionRequested += Attack;
+            _animator.AnimationEnded += EndAttack;
         }
 
         private void SetDirection(float direction)
@@ -118,27 +127,15 @@ namespace Player
             }
         }
 
-        private void PlayAnimation(AnimationType animationType, bool active)
+        private void Attack()
         {
-            if (!active)
-            {
-                if (_currentAnimationType == AnimationType.Idle || _currentAnimationType != animationType)
-                    return;
 
-                _currentAnimationType = AnimationType.Idle;
-                PlayAnimation(_currentAnimationType);
-                return;
-            }
-            if (_currentAnimationType >= animationType)
-                return;
-
-            _currentAnimationType = animationType;
-            PlayAnimation(_currentAnimationType);
         }
-
-        private void PlayAnimation(AnimationType animationType)
+        private void EndAttack()
         {
-            _animator.SetInteger(nameof(AnimationType), (int)animationType);
+            _animator.ActionRequested -= Attack;
+            _animator.AnimationEnded -= EndAttack;
+            _animator.PlayAnimation(AnimationType.Attack, false);
         }
     }
 }
